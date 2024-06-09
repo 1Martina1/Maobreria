@@ -22,15 +22,9 @@ public class BookController {
     }
 
     @PostMapping
-    @RequestMapping("")
     public Boolean insertNewBook(
             @RequestBody InsertBookRequestDTO insertBookRequestDTO) {
         return bookService.insertNewBook(insertBookRequestDTO);
     }
 
-
-    /*
-    Creare un'api che prende in input nome, autore, punteggio, numero di recensioni e prezzo e salva un libro nel database.
-    Prima di saòvarlo controllare a db se esiste già un libro con lo stesso nome e autore, in tal caso restituire un errore.
-     */
 }

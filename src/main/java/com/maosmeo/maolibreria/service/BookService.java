@@ -46,15 +46,15 @@ public class BookService {
     public Boolean insertNewBook(InsertBookRequestDTO insertBookRequestDTO){
         List<BookEntity> existingBooks = bookRepository.findByNameAndAuthor(insertBookRequestDTO.getName(), insertBookRequestDTO.getAuthor());
 
-        BookEntity bookEntity = new BookEntity();
-        bookEntity.setName(insertBookRequestDTO.getName());
-        bookEntity.setAuthor(insertBookRequestDTO.getAuthor());
-        bookEntity.setPrice(insertBookRequestDTO.getPrice());
-        bookEntity.setScore(insertBookRequestDTO.getScore());
-        bookEntity.setReviewCount(insertBookRequestDTO.getReviewCount());
-        bookEntity.setPlot(insertBookRequestDTO.getPlot());
-
         if (existingBooks.isEmpty()) {
+            BookEntity bookEntity = new BookEntity();
+            bookEntity.setName(insertBookRequestDTO.getName());
+            bookEntity.setAuthor(insertBookRequestDTO.getAuthor());
+            bookEntity.setPrice(insertBookRequestDTO.getPrice());
+            bookEntity.setScore(insertBookRequestDTO.getScore());
+            bookEntity.setReviewCount(insertBookRequestDTO.getReviewCount());
+            bookEntity.setPlot(insertBookRequestDTO.getPlot());
+
             bookRepository.save(bookEntity);
 
             return true;
