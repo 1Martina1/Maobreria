@@ -1,13 +1,11 @@
 package com.maosmeo.maolibreria.controller;
 
 import com.maosmeo.maolibreria.dto.GetBooksResponseDTO;
+import com.maosmeo.maolibreria.dto.InsertBookRequestDTO;
 import com.maosmeo.maolibreria.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/books")
@@ -22,6 +20,14 @@ public class BookController {
             @RequestParam(value = "size") Integer size) {
         return bookService.getBooks(page, size);
     }
+
+    @PostMapping
+    @RequestMapping("")
+    public Boolean insertNewBook(
+            @RequestBody InsertBookRequestDTO insertBookRequestDTO) {
+        return bookService.insertNewBook(insertBookRequestDTO);
+    }
+
 
     /*
     Creare un'api che prende in input nome, autore, punteggio, numero di recensioni e prezzo e salva un libro nel database.

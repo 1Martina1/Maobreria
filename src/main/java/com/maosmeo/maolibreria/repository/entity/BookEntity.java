@@ -22,4 +22,6 @@ public class BookEntity {
     private Integer reviewCount;
     @Column(name="PRICE")
     private Double price;
+    @Column(name="PLOT")
+    private String plot;
 }

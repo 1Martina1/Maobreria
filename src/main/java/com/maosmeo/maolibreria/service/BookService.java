@@ -1,6 +1,7 @@
 package com.maosmeo.maolibreria.service;
 
 import com.maosmeo.maolibreria.dto.BookDTO;
+import com.maosmeo.maolibreria.dto.InsertBookRequestDTO;
 import com.maosmeo.maolibreria.repository.BookRepository;
 import com.maosmeo.maolibreria.dto.GetBooksResponseDTO;
 import com.maosmeo.maolibreria.repository.entity.BookEntity;
@@ -40,5 +41,25 @@ public class BookService {
 
 
         return getBooksResponseDTO;
+    }
+
+    public Boolean insertNewBook(InsertBookRequestDTO insertBookRequestDTO){
+        List<BookEntity> existingBooks = bookRepository.findByNameAndAuthor(insertBookRequestDTO.getName(), insertBookRequestDTO.getAuthor());
+
+        BookEntity bookEntity = new BookEntity();
+        bookEntity.setName(insertBookRequestDTO.getName());
+        bookEntity.setAuthor(insertBookRequestDTO.getAuthor());
+        bookEntity.setPrice(insertBookRequestDTO.getPrice());
+        bookEntity.setScore(insertBookRequestDTO.getScore());
+        bookEntity.setReviewCount(insertBookRequestDTO.getReviewCount());
+        bookEntity.setPlot(insertBookRequestDTO.getPlot());
+
+        if (existingBooks.isEmpty()) {
+            bookRepository.save(bookEntity);
+
+            return true;
+        }
+
+        return false;
     }
 }
