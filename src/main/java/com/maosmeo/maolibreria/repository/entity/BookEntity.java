@@ -14,8 +14,6 @@ public class BookEntity {
     private Integer id;
     @Column(name="NAME")
     private String name;
-    @Column(name="AUTHOR")
-    private String author;
     @Column(name="SCORE")
     private Integer score;
     @Column(name="REVIEW_COUNT")
@@ -24,4 +22,7 @@ public class BookEntity {
     private Double price;
     @Column(name="PLOT")
     private String plot;
+    @ManyToOne
+    @JoinColumn(name="AUTHOR_FK", nullable=false)
+    private AuthorEntity author;
 }

@@ -9,4 +9,5 @@ public class BookDTO {
     private Integer score;
     private Integer reviewCount;
     private Double price;
+    private String plot;
 }
