@@ -23,6 +23,6 @@ public class BookEntity {
     @Column(name="PLOT")
     private String plot;
     @ManyToOne
-    @JoinColumn(name="AUTHOR_FK", nullable=false)
+    @JoinColumn(name="AUTHOR_FK", nullable=true)
     private AuthorEntity author;
 }

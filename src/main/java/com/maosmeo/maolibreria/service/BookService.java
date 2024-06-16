@@ -3,6 +3,7 @@ package com.maosmeo.maolibreria.service;
 import com.maosmeo.maolibreria.dto.BookDTO;
 import com.maosmeo.maolibreria.dto.InsertAuthorRequestDTO;
 import com.maosmeo.maolibreria.dto.InsertBookRequestDTO;
+import com.maosmeo.maolibreria.exceptions.ResourceNotFoundException;
 import com.maosmeo.maolibreria.repository.AuthorRepository;
 import com.maosmeo.maolibreria.repository.BookRepository;
 import com.maosmeo.maolibreria.dto.GetBooksResponseDTO;
@@ -49,7 +50,7 @@ public class BookService {
     }
 
     public Boolean insertNewBook(InsertBookRequestDTO insertBookRequestDTO){
-        List<BookEntity> existingBooks = bookRepository.findByNameAndAuthor(insertBookRequestDTO.getName(), insertBookRequestDTO.getAuthor());
+        List<BookEntity> existingBooks = bookRepository.findByNameAndAuthor_Id(insertBookRequestDTO.getName(), insertBookRequestDTO.getAuthorId());
 
         if (existingBooks.isEmpty()) {
             BookEntity bookEntity = new BookEntity();
@@ -59,12 +60,10 @@ public class BookService {
             bookEntity.setScore(insertBookRequestDTO.getScore());
             bookEntity.setReviewCount(insertBookRequestDTO.getReviewCount());
             bookEntity.setPlot(insertBookRequestDTO.getPlot());
-            Optional<AuthorEntity> authorById = authorRepository.findById(insertBookRequestDTO.getAuthorId());
-            if(authorById.isPresent()){
-                bookEntity.setAuthor(authorById.get());
-            }else{
-                return false;
-            }
+            AuthorEntity authorById = authorRepository.findById(insertBookRequestDTO.getAuthorId()).orElseThrow(() -> new ResourceNotFoundException("L'autore non è stato trovato"));
+
+            bookEntity.setAuthor(authorById);
+
             bookRepository.save(bookEntity);
 
             return true;
@@ -103,7 +102,7 @@ public class BookService {
             bookRepository.deleteById(id);
             return "L'elemento è stato eliminato";
         }else {
-            return "L'elemento non è stato trovato";
+            throw new ResourceNotFoundException("Il libro non è stato trovato");
         }
     }
 
