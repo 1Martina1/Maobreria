@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/books")
 @Tag(name = "Book Controller", description = "Book API endpoints")
 public class BookController {
+//http://localhost:8080/swagger-ui/index.html
 
     @Autowired
     private BookService bookService;
