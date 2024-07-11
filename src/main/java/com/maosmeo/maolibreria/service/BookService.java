@@ -1,12 +1,13 @@
 package com.maosmeo.maolibreria.service;
 
-import com.maosmeo.maolibreria.dto.BookDTO;
-import com.maosmeo.maolibreria.dto.InsertAuthorRequestDTO;
-import com.maosmeo.maolibreria.dto.InsertBookRequestDTO;
+import com.maosmeo.maolibreria.dto.book.BookDTO;
+import com.maosmeo.maolibreria.dto.book.GetBooksResponseDTO;
+import com.maosmeo.maolibreria.dto.book.InsertAuthorRequestDTO;
+import com.maosmeo.maolibreria.dto.book.InsertBookRequestDTO;
+import com.maosmeo.maolibreria.exceptions.ExistingResourceException;
 import com.maosmeo.maolibreria.exceptions.ResourceNotFoundException;
 import com.maosmeo.maolibreria.repository.AuthorRepository;
 import com.maosmeo.maolibreria.repository.BookRepository;
-import com.maosmeo.maolibreria.dto.GetBooksResponseDTO;
 import com.maosmeo.maolibreria.repository.entity.AuthorEntity;
 import com.maosmeo.maolibreria.repository.entity.BookEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class BookService {
@@ -39,6 +43,7 @@ public class BookService {
             bookDTO.setScore(entity.getScore());
             bookDTO.setReviewCount(entity.getReviewCount());
             bookDTO.setPrice(entity.getPrice());
+            bookDTO.setPublicationDate(entity.getPublicationDate());
 
             books.add(bookDTO);
         }
@@ -60,6 +65,7 @@ public class BookService {
             bookEntity.setScore(insertBookRequestDTO.getScore());
             bookEntity.setReviewCount(insertBookRequestDTO.getReviewCount());
             bookEntity.setPlot(insertBookRequestDTO.getPlot());
+            bookEntity.setPublicationDate(insertBookRequestDTO.getPublicationDate());
             AuthorEntity authorById = authorRepository.findById(insertBookRequestDTO.getAuthorId()).orElseThrow(() -> new ResourceNotFoundException("L'autore non è stato trovato"));
 
             bookEntity.setAuthor(authorById);
@@ -84,6 +90,7 @@ public class BookService {
             bookDTO.setReviewCount(bookEntity.getReviewCount());
             bookDTO.setPrice(bookEntity.getPrice());
             bookDTO.setPlot(bookEntity.getPlot());
+            bookDTO.setPublicationDate(bookEntity.getPublicationDate());
 
             bookDTOS.add(bookDTO);
 
@@ -106,7 +113,7 @@ public class BookService {
         }
     }
 
-    public String isertAuthor (InsertAuthorRequestDTO insertAuthorRequestDTO) {
+    public String insertAuthor (InsertAuthorRequestDTO insertAuthorRequestDTO) {
         List<AuthorEntity> authorEntity = authorRepository.findByNameAndSurname(insertAuthorRequestDTO.getName(), insertAuthorRequestDTO.getSurname());
 
         if (authorEntity.isEmpty()) {
@@ -120,7 +127,31 @@ public class BookService {
             authorRepository.save(entity);
             return "L'inserimento è avvenuto con successo";
         }else{
-            return "Autore già presente";
+            throw new ExistingResourceException("Autore già presente");
         }
     }
+
+    public GetBooksResponseDTO getLatestReleases(Integer page, Integer size){
+        GetBooksResponseDTO getBooksResponseDTO = new GetBooksResponseDTO();
+
+        Pageable pageable = PageRequest.of(page, size);
+        Long date = LocalDate.now(ZoneId.of("Europe/Rome")).minusDays(60).atStartOfDay(ZoneId.systemDefault())
+                .toInstant().toEpochMilli();
+
+        List<BookDTO> booksDTO = bookRepository.findByPublicationDateGreaterThanEqual(date, pageable).stream().map(b -> {
+
+            BookDTO bookDTO = new BookDTO();
+            bookDTO.setName(b.getName());
+            bookDTO.setScore(b.getScore());
+            bookDTO.setReviewCount(b.getReviewCount());
+            bookDTO.setPrice(b.getPrice());
+            bookDTO.setPublicationDate(b.getPublicationDate());
+
+            return bookDTO;
+        }).toList();
+
+        getBooksResponseDTO.setBooks(booksDTO);
+        return getBooksResponseDTO;
+}
+
 }

@@ -17,4 +17,12 @@ public class ExceptionResolver {
         response.put("message", ex.getMessage());
         return response;
     }
+
+    @ExceptionHandler(value = {ExistingResourceException.class})
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> runtimeException (ExistingResourceException ex){
+        Map<String, String> response = new HashMap<>();
+        response.put("message", ex.getMessage());
+        return response;
+    }
 }

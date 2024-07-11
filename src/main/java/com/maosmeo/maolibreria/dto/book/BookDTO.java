@@ -1,4 +1,4 @@
-package com.maosmeo.maolibreria.dto;
+package com.maosmeo.maolibreria.dto.book;
 
 import lombok.Data;
 
@@ -10,4 +10,5 @@ public class BookDTO {
     private Integer reviewCount;
     private Double price;
     private String plot;
+    private Long publicationDate;
 }

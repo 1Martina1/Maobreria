@@ -22,6 +22,8 @@ public class BookEntity {
     private Double price;
     @Column(name="PLOT")
     private String plot;
+    @Column(name="PUBLICATION_DATE")
+    private Long publicationDate;
     @ManyToOne
     @JoinColumn(name="AUTHOR_FK", nullable=true)
     private AuthorEntity author;

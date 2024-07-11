@@ -1,4 +1,4 @@
-package com.maosmeo.maolibreria.dto;
+package com.maosmeo.maolibreria.dto.book;
 
 import lombok.Data;
 
