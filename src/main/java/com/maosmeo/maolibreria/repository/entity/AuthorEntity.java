@@ -22,6 +22,6 @@ public class AuthorEntity {
     private Long birthDate;
     @Column(name="DESCRIPTION")
     private String description;
-    @OneToMany(mappedBy = "author")
+    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
     private Set<BookEntity> books;
 }
