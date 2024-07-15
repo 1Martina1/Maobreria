@@ -28,4 +28,7 @@ public class UserEntity {
     private Integer telephone;
     @Column(name="PASSWORD")
     private String password;
+    @ManyToOne
+    @JoinColumn(name="ROLE_FK", nullable=true)
+    private RoleEntity roleEntity;
 }
