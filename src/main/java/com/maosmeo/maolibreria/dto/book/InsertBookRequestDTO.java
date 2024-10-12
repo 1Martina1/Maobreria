@@ -6,6 +6,7 @@ import lombok.Data;
 public class InsertBookRequestDTO {
     private String name;
     private Integer authorId;
+    private String literaryGenre;
     private Integer score;
     private Integer reviewCount;
     private Double price;

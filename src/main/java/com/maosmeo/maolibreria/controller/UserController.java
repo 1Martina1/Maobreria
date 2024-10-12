@@ -1,8 +1,11 @@
 package com.maosmeo.maolibreria.controller;
 
+import com.maosmeo.maolibreria.dto.book.InsertAuthorRequestDTO;
+import com.maosmeo.maolibreria.dto.book.InsertLibraryLocationRequestDTO;
 import com.maosmeo.maolibreria.dto.user.InsertUserRequestDTO;
 import com.maosmeo.maolibreria.dto.user.UserLoginRequestDTO;
 import com.maosmeo.maolibreria.dto.user.UserLoginResponseDTO;
+import com.maosmeo.maolibreria.exceptions.ForbiddenException;
 import com.maosmeo.maolibreria.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

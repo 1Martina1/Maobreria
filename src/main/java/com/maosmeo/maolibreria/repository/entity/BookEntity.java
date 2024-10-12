@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Set;
+
 @Entity
 @Getter
 @Setter
@@ -16,6 +18,8 @@ public class BookEntity {
     private String name;
     @Column(name="SCORE")
     private Integer score;
+    @Column(name="LITERARY_GENRE")
+    private String literaryGenre;
     @Column(name="REVIEW_COUNT")
     private Integer reviewCount;
     @Column(name="PRICE")
@@ -27,4 +31,6 @@ public class BookEntity {
     @ManyToOne
     @JoinColumn(name="AUTHOR_FK", nullable=true)
     private AuthorEntity author;
+    @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
+    private Set<StockEntity> stock;
 }

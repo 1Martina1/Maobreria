@@ -1,28 +1,28 @@
 package com.maosmeo.maolibreria.service;
 
-import com.maosmeo.maolibreria.dto.book.BookDTO;
-import com.maosmeo.maolibreria.dto.book.GetBooksResponseDTO;
-import com.maosmeo.maolibreria.dto.book.InsertAuthorRequestDTO;
-import com.maosmeo.maolibreria.dto.book.InsertBookRequestDTO;
+import com.maosmeo.maolibreria.dto.book.*;
 import com.maosmeo.maolibreria.exceptions.ExistingResourceException;
 import com.maosmeo.maolibreria.exceptions.ResourceNotFoundException;
 import com.maosmeo.maolibreria.repository.AuthorRepository;
 import com.maosmeo.maolibreria.repository.BookRepository;
 import com.maosmeo.maolibreria.repository.entity.AuthorEntity;
 import com.maosmeo.maolibreria.repository.entity.BookEntity;
+import jakarta.persistence.Column;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class BookService {
+public class BookService extends BaseService{
 
     @Autowired
     private BookRepository bookRepository;
@@ -40,6 +40,7 @@ public class BookService {
         for(BookEntity entity : bookEntities){
             BookDTO bookDTO = new BookDTO();
             bookDTO.setName(entity.getName());
+            bookDTO.setLiteraryGenre(entity.getLiteraryGenre());
             bookDTO.setScore(entity.getScore());
             bookDTO.setReviewCount(entity.getReviewCount());
             bookDTO.setPrice(entity.getPrice());
@@ -62,6 +63,7 @@ public class BookService {
 
             bookEntity.setName(insertBookRequestDTO.getName());
             bookEntity.setPrice(insertBookRequestDTO.getPrice());
+            bookEntity.setLiteraryGenre(insertBookRequestDTO.getLiteraryGenre());
             bookEntity.setScore(insertBookRequestDTO.getScore());
             bookEntity.setReviewCount(insertBookRequestDTO.getReviewCount());
             bookEntity.setPlot(insertBookRequestDTO.getPlot());
@@ -86,6 +88,7 @@ public class BookService {
         for(BookEntity bookEntity : bookEntities){
             BookDTO bookDTO = new BookDTO();
             bookDTO.setName(bookEntity.getName());
+            bookDTO.setLiteraryGenre(bookEntity.getLiteraryGenre());
             bookDTO.setScore(bookEntity.getScore());
             bookDTO.setReviewCount(bookEntity.getReviewCount());
             bookDTO.setPrice(bookEntity.getPrice());
@@ -142,6 +145,7 @@ public class BookService {
 
             BookDTO bookDTO = new BookDTO();
             bookDTO.setName(b.getName());
+            bookDTO.setLiteraryGenre(b.getLiteraryGenre());
             bookDTO.setScore(b.getScore());
             bookDTO.setReviewCount(b.getReviewCount());
             bookDTO.setPrice(b.getPrice());
@@ -152,6 +156,82 @@ public class BookService {
 
         getBooksResponseDTO.setBooks(booksDTO);
         return getBooksResponseDTO;
-}
+    }
 
+    public GetInfoAuthorsResponseDTO searchInfoAuthorByLetter(String initialLetter){
+        List<AuthorEntity> authorEntity = authorRepository.findByNameStartsWithIgnoreCase(initialLetter);
+
+        List<AuthorDTO> authorDTO = authorEntity
+                .stream()
+                .sorted(Comparator.comparing(AuthorEntity::getName))
+                .map(a -> {
+                    AuthorDTO author = new AuthorDTO();
+                    author.setFullName(a.getName() + " " + a.getSurname());
+                    author.setBirthDate(convertTime(a.getBirthDate()));
+                    author.setDescription(a.getDescription());
+                    author.setAverageBookPrice(a.getBooks().stream().mapToDouble(BookEntity::getPrice).average().orElse(0.0));
+
+                    LatestBook latestBook = new LatestBook();
+                    List<LatestBook> latestBooks =
+                            a.getBooks()
+                            .stream()
+                            .filter(b -> b.getPublicationDate() >= (System.currentTimeMillis() - (94608000000L)))
+                        /*
+                        b.getPublicationDate (01/01/2020)= 1577833200000
+                        System.currentTimeMillis (12/10/2024)= 1728739731000
+                        3 anni = 94608000000
+
+                        System.currentTimeMillis - 3anni = 1634131731000
+
+
+                        1 anno = 365 giorni
+                        1 giorno = 24 ore
+                        1 ora = 60 minuti
+                        1 minuto = 60 secondi
+                        1 secondo = 1000 millisecondi
+
+                        3 anni = 1095 giorni
+                        1095 giorni = 26280 ore
+                        26280 ore = 1576800
+                        1576800 minuti = 94608000 secondi
+                        94608000 secondi = 94608000000 millisecondi
+                        System.currentTimeMilis =
+
+                        01/01/1970 = 0L
+                        01/01/1973 = 94608000000L
+                         */
+
+                        /*
+                        java.util.Date -> new Date()
+                        java.date.LocalDate -> LocalDate.now()
+                        java.date.Instant -> Instant.now()
+                        java.date.Timestamp -> Timestamp.now()
+                        Long -> System.currentTimeMillis()
+
+
+                         */
+                            .map(b -> {
+
+                                latestBook.setName(b.getName());
+                                latestBook.setPrice(b.getPrice().longValue());
+                                latestBook.setPublicationDate(convertTime(b.getPublicationDate()));
+                                latestBook.setPlot(b.getPlot());
+
+                                return latestBook;
+                            }).collect(Collectors.toList());
+                    author.setLatestBooks(latestBooks);
+
+                    return author;
+
+                }).toList();
+
+
+        return new GetInfoAuthorsResponseDTO(authorDTO);
+    }
+
+    public String convertTime(long time){
+        Date date = new Date(time);
+        Format format = new SimpleDateFormat("yyyy MM dd HH:mm:ss");
+        return format.format(date);
+    }
 }

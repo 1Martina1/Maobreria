@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BookRepository extends JpaRepository<BookEntity, Integer> {
@@ -16,5 +17,5 @@ public interface BookRepository extends JpaRepository<BookEntity, Integer> {
 
     List<BookEntity> findByNameAndAuthor_Id(String name, Integer id);
 
-
+    Optional<BookEntity> findByNameAndAuthor_Name(String name, String author);
 }

@@ -25,4 +25,20 @@ public class ExceptionResolver {
         response.put("message", ex.getMessage());
         return response;
     }
+
+    @ExceptionHandler(value = {ForbiddenException.class})
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public Map<String, String> forbiddenException (ForbiddenException ex){
+        Map<String, String> response = new HashMap<>();
+        response.put("message", ex.getMessage());
+        return response;
+    }
+
+    @ExceptionHandler(value = {UnexpectedErrorException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> unexpectedErrorException (UnexpectedErrorException ex){
+        Map<String, String> response = new HashMap<>();
+        response.put("message", ex.getMessage());
+        return response;
+    }
 }

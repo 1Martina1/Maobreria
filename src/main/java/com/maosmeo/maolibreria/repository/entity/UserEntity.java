@@ -21,11 +21,9 @@ public class UserEntity {
     @Column(name="EMAIL")
     private String email;
     @Column(name="BIRTHDATE")
-    private Long birthDate;
-    @Column(name="DESCRIPTION")
-    private String description;
+    private String birthDate;
     @Column(name="TELEPHONE")
-    private Integer telephone;
+    private String telephone;
     @Column(name="PASSWORD")
     private String password;
     @ManyToOne
